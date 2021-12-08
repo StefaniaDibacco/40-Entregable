@@ -31,6 +31,8 @@ args.options(options);
 const flags = args.parse(process.argv);
 
 const env = {
+  DB: Number(process.env.DB) || 0,
+  MONGO_LOCAL_DBNAME: '//localhost:27017/ecommerce',
   MONGO_ATLAS_URL: process.env.MONGO || 'mongoSRV',
   PORT: process.env.PORT || process.env.NODE_PORT || flags.port,
   FACEBOOK_APP_ID: process.env.FACEBOOK_APP_ID || flags.faceId || 'faceId',

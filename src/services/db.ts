@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
+import env from '../config/index';
 
-mongoose.connect('mongodb://localhost:27017/ecommerce');
+mongoose.connect(env.MONGO_LOCAL_DBNAME);
 
 const Schema = mongoose.Schema;
 

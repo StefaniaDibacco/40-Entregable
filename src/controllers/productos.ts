@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import { productsPersistencia } from '../persistencia/productos';
+import { productsAPI } from '../apis/productos';
+import { ProductQuery } from '../models/products/products.interface';
 
 class Producto {
   checkAddProducts(req: Request, res: Response, next: NextFunction) {
-    const { title, price } = req.body;
+    const { nombre, precio } = req.body;
 
-    if (!title || !price || typeof title !== 'string' || isNaN(price)) {
+    if (!nombre || !precio || typeof nombre !== 'string' || isNaN(precio)) {
       return res.status(400).json({
         msg: 'Campos del body invalidos',
       });
@@ -14,36 +15,52 @@ class Producto {
     next();
   }
 
-  checkProductExists(req: Request, res: Response, next: NextFunction) {
-    if (req.params.id) {
-      const id = req.params.id;
+  async checkProductExists(req: Request, res: Response, next: NextFunction) {
+    const id = req.params.id;
+    const producto = await productsAPI.getProducts(id);
 
-      const producto = productsPersistencia.leerUno(id);
-
-      if (!producto) {
-        return res.status(404).json({
-          msg: 'producto not found',
-        });
-      }
+    if (!producto) {
+      return res.status(404).json({
+        msg: 'producto not found',
+      });
     }
     next();
   }
 
   async getProducts(req: Request, res: Response) {
-    const id = Number(req.params.id);
+    const { id } = req.params;
+    const { nombre, precio } = req.query;
+    if (id) {
+      const result = await productsAPI.getProducts(id);
+      if (!result.length)
+        return res.status(404).json({
+          data: 'objeto no encontrado',
+        });
 
-    const producto = id
-      ? await productsPersistencia.leerUno(id)
-      : await productsPersistencia.leer();
+      return res.json({
+        data: result,
+      });
+    }
+
+    const query: ProductQuery = {};
+
+    if (nombre) query.nombre = nombre.toString();
+
+    if (precio) query.precio = Number(precio);
+
+    if (Object.keys(query).length) {
+      return res.json({
+        data: await productsAPI.query(query),
+      });
+    }
 
     res.json({
-      data: producto,
+      data: await productsAPI.getProducts(),
     });
   }
 
-  addProducts(req: Request, res: Response) {
-    const { title, price, thumbnail } = req.body;
-    const newItem = productsPersistencia.guardar(title, price, thumbnail);
+  async addProducts(req: Request, res: Response) {
+    const newItem = await productsAPI.addProduct(req.body);
 
     res.json({
       msg: 'producto agregado con exito',
@@ -51,28 +68,24 @@ class Producto {
     });
   }
 
-  updateProducts(req: Request, res: Response) {
-    const id = Number(req.params.id);
-    const { title, price, thumbnail } = req.body;
-    const newItem = productsPersistencia.actualizar(
-      id,
-      title,
-      price,
-      thumbnail
-    );
+  async updateProducts(req: Request, res: Response) {
+    const id = req.params.id;
+
+    const updatedItem = await productsAPI.updateProduct(id, req.body);
+
     res.json({
-      data: newItem,
       msg: 'actualizando producto',
+      data: updatedItem,
     });
   }
 
-  deleteProducts(req: Request, res: Response) {
-    const id = Number(req.params.id);
-    productsPersistencia.borrarUno(id);
+  async deleteProducts(req: Request, res: Response) {
+    const id = req.params.id;
+    await productsAPI.deleteProduct(id);
     res.json({
       msg: 'producto borrado',
     });
   }
 }
 
-export const productController = new Producto();
+export const productsController = new Producto();
