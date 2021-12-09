@@ -19,7 +19,8 @@ class Producto {
     const id = req.params.id;
     const producto = await productsAPI.getProducts(id);
 
-    if (!producto) {
+    // eslint-disable-next-line no-extra-boolean-cast
+    if (!!producto) {
       return res.status(404).json({
         msg: 'producto not found',
       });
@@ -32,7 +33,7 @@ class Producto {
     const { nombre, precio } = req.query;
     if (id) {
       const result = await productsAPI.getProducts(id);
-      if (!result.length)
+      if (!result)
         return res.status(404).json({
           data: 'objeto no encontrado',
         });

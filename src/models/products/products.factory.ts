@@ -2,7 +2,7 @@ import { ProductosMemDAO } from './DAOs/memory';
 import { ProductosFSDAO } from './DAOs/fs';
 import { ProductosMongoDAO } from './DAOs/mongo';
 import { logger } from '../../utils/logger';
-import { ProductI, ProductQuery } from './products.interface';
+import { ProductBaseClass } from './products.interface';
 import path from 'path';
 
 export enum TipoPersistencia {
@@ -16,19 +16,12 @@ export enum TipoPersistencia {
   LocalMongo = 'LOCAL-MONGO',
   // Firebase = 'FIREBASE',
 }
-export interface IModel {
-  get: (id?: string) => Promise<ProductI | ProductI[]>;
-  add: (producto: ProductI) => Promise<ProductI>;
-  update: (id: string, producto: ProductI) => Promise<ProductI>;
-  delete: (id: string) => Promise<void>;
-  query: (options: ProductQuery) => Promise<ProductI | ProductI[]>;
-}
 
 export class NoticiasFactoryDAO {
-  private static instance: IModel;
+  private static instance: ProductBaseClass;
   private static value: number;
 
-  static model(type: any): IModel {
+  static model(type: any): ProductBaseClass {
     switch (type) {
       case TipoPersistencia.FileSystem:
         logger.info('Retornando Instancia Products FS');

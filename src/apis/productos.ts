@@ -20,7 +20,9 @@ class prodAPI {
     this.productos = NoticiasFactoryDAO.model(type);
   }
 
-  async getProducts(id: string | undefined = undefined): Promise<ProductI[]> {
+  async getProducts(
+    id: string | undefined = undefined
+  ): Promise<ProductI[] | ProductI> {
     if (id) return this.productos.get(id);
 
     return this.productos.get();

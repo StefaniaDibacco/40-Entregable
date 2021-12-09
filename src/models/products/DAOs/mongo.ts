@@ -36,6 +36,7 @@ export class ProductosMongoDAO implements ProductBaseClass {
   async add(data: newProductI): Promise<ProductI> {
     if (!data.nombre || !data.precio) throw new Error('invalid data');
 
+    // eslint-disable-next-line new-cap
     const newProduct = new this.productos(data);
     await newProduct.save();
 

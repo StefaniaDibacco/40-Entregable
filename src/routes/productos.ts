@@ -1,33 +1,33 @@
 import { Router } from 'express';
-import { productController } from '../controllers/productos';
+import { productsController } from '../controllers/productos';
 import { checkAdmin } from '../middleware/admin';
 
 const router = Router();
 
-router.get('/', productController.getProducts);
+router.get('/', productsController.getProducts);
 
 router.get(
   '/listar/:id?',
-  productController.checkProductExists,
-  productController.getProducts
+  productsController.checkProductExists,
+  productsController.getProducts
 );
 
 router.post(
   '/agregar',
-  [checkAdmin, productController.checkAddProducts],
-  productController.addProducts
+  [checkAdmin, productsController.checkAddProducts],
+  productsController.addProducts
 );
 
 router.put(
   '/actualizar/:id',
-  [checkAdmin, productController.checkProductExists],
-  productController.updateProducts
+  [checkAdmin, productsController.checkProductExists],
+  productsController.updateProducts
 );
 
 router.delete(
   '/borrar/:id',
-  [checkAdmin, productController.checkProductExists],
-  productController.deleteProducts
+  [checkAdmin, productsController.checkProductExists],
+  productsController.deleteProducts
 );
 
 export default router;
